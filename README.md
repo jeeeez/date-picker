@@ -19,3 +19,11 @@ date-picker
  *          j.horizontalOffSet：水平偏移量：默认0
  *          k.verticalOffSet：垂直偏移量，默认0
  */
+
+
+log：2014-05-13
+待解决问题：
+  1.IE6，7中定位不准确
+  2.控件使用absolute定位，且在DOM树中的位置为obj的兄弟节点，应该将其直接附属于body较好
+  3.能否手动输入日期未做
+  4.控件中有个特殊处理，在--TODO中，虽然已做处理，但是问题未根治
