@@ -1,0 +1,83 @@
+.ui-base-datepicker-box{
+	width: 180px; height: auto; 
+	position: absolute; z-index: 100;
+	cursor: pointer; 
+	background-color: #fff; 
+	border: 1px solid #e1e1e1;
+	-webkit-user-select: none; -ms-user-select: none; user-select: none; 
+	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); 
+	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); 
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); 
+	font-family: 微软雅黑,宋体, 新宋体, Tahoma, Aharoni;
+}
+
+.ui_base_datepicker_title { 
+	width: 100%; height: 25px; 
+	background-color: #f2f2f2; color: #444;
+	overflow: hidden; 
+}
+
+.ui_base_datepicker_title > span{ 
+	display: inline-block; 
+	width:20%;height: 25px;
+	line-height: 25px; 
+	text-align: center; 
+	font-size: 12px;
+	overflow: hidden;
+}
+.ui_base_datepicker_title > span:hover{ 
+	color:#ff0000;
+}
+
+span.dp_prevyear, 
+span.dp_prevmonth, 
+span.dp_nextmonth, 
+span.dp_nextyear { 
+	width: 15%;
+}
+
+
+.ui_base_datepicker_table {
+	width: 100%; height:auto; 
+	border-collapse: collapse; 
+	text-align: center;
+	color: Gray; 
+}
+
+.ui_base_datepicker_table th { 
+	padding: 3px 0; 
+	border: 1px solid #fff; 
+	font-size: 11px; 
+}
+.ui_base_datepicker_table td { 
+	padding: 2px 0; 
+	border: 1px solid #fff; 
+	font-size: 10px; 
+}
+
+.ui_base_datepicker_table td.today { 
+	background-color: #caddef; 
+	color: #111; 
+}
+.ui_base_datepicker_table td.currentday { 
+	background-color: #8ca4c8; 
+	color: Red; 
+}
+.ui_base_datepicker_table td.othermonth { 
+	background-color: #fafafa; 
+	color: #aaa; 
+}
+.ui_base_datepicker_table td.currentmonth { 
+	background-color: #e0e0e0; 
+	color: #888; 
+}
+td.othermonth:hover, 
+td.currentmonth:hover, 
+td.today:hover { 
+	background-color: #8ca4c8; 
+	color: Red; 
+}
+.ui_base_datepicker_table td.disabled { 
+	background-color: #f3f3f3; 
+	color: #fff; cursor: default; 
+}
