@@ -67,6 +67,9 @@
 
 
 /*
+ *  date:2014-05-13
+ *  author:picker lee
+ *
  *  日期选择控件
  *  调用方法：datePicker(obj,[opts])或者new datePicker(obj,[opts])
  *  参数：
@@ -90,6 +93,7 @@ function datePicker(obj,opts){
     }
     opts=opts||{};
     this.obj=typeof obj==="string"?document.getElementById(obj):obj;
+    
     this.eventType=opts.eventType||"click";
     this.dateNames=opts.dateNames||["日", "一", "二", "三", "四", "五", "六"];
     this.dateNameTitles=opts.dateNameTitles||["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -141,6 +145,8 @@ datePicker.prototype={
     rand:function(){
         return Math.random().toString().substr(2);
     },
+
+    // 初始化，为对象添加监听事件
     init:function(){
         var _this=this,
             obj=_this.obj,
@@ -152,6 +158,8 @@ datePicker.prototype={
         this.IDS.next_year="ny-"+d_id;
         this.IDS.next_month="nm-"+d_id;
         this.IDS.closeEventListener="close-"+d_id;
+        this.IDS.E1="E1-"+d_id;
+        this.IDS.E2="E2-"+d_id;
 
 
 
@@ -175,10 +183,14 @@ datePicker.prototype={
 
             _this.loadPickerBox(y,m);
 
+            _this.closeFromDoc();
+
         });
 
 
      },
+
+     // 创建日历控件对象，并添加事件监听
      loadPickerBox:function(year,month){
         var dp_box=document.getElementById(this.IDS.dp_id);
             if(!dp_box){
@@ -189,15 +201,18 @@ datePicker.prototype={
                 dp_box.style.top=this.top+"px";
                 dp_box.style.left=this.left+"px";
 
-                this.obj.parentNode.appendChild(dp_box);
+                // 将日历控件添加到body下应该更好
+                // this.obj.parentNode.appendChild(dp_box);
+                document.body.appendChild(dp_box);
 
                 
-                this.closeListener(dp_box);
                 this.eventHanlder(dp_box);
             }
 
         dp_box.innerHTML=this.loadHtml(year,month);
      },
+
+     // 日历控件内容添加
     loadHtml:function(year,month){
         this.currentYear=year;
         this.currentMonth=month;
@@ -275,103 +290,117 @@ datePicker.prototype={
 
         return h_html.join('')+b_html.join('');
     },
+
     // 日历控件的事件监听
     eventHanlder:function(dp_box){
         var _this=this;
 
-        this.closeHanlder1=function(e,box){
-            e=EventUtil.getEvent(e);
-            var target=EventUtil.getTarget(e);
-
-            if(!target||!target.nodeName){
-                return;
-            }
-
-            // 4 control buttons
-            if(target.nodeName=="SPAN"){
-                if(target.id==_this.IDS.prev_year){
-                  _this.currentYear--; 
-                }
-                else if(target.id==_this.IDS.prev_month){
-                    if(_this.currentMonth==0){
-                        _this.currentMonth=11;
-                        _this.currentYear--;
-                    }else{
-                        _this.currentMonth--;
-                    }
-                }
-                else if(target.id==_this.IDS.next_year){
-                    _this.currentYear++; 
-                }
-                else if(target.id==_this.IDS.next_month){
-                    if(_this.currentMonth==11){
-                        _this.currentMonth=0;
-                        _this.currentYear++;
-                    }else{
-                        _this.currentMonth++;
-                    }
-                }
-                _this.loadPickerBox(_this.currentYear,_this.currentMonth);
-            }
-
-            // dates
-            else if(target.nodeName=="TD"){
-                // 判断日期是否可选
-                if(!_this.hasClassName(target,_this.ClassNames.td_disabled)){
-                    //赋值并移除控件
-                    _this.obj.value=target.title;
-                    _this.currentDate=target.title;
-                    _this.close(box);
-                }
-
-            }
-
-        };
-
         // datepicker box event
-        EventUtil.addHandler(dp_box,"click",function(e){
-            _this.closeHanlder1(e,dp_box);
-        });      
+        _this.E1=function(e){_this.closeHanlder1(e);};
+        EventUtil.addHandler(dp_box,"click",_this.E1 );      
 
     },
+
     // body 监听 点击空白处 关闭日历控件
-    closeListener:function(dp_box){
+    closeFromDoc:function(){
         var _this=this;
 
-        _this.closeHanlder2=function(e,box){
-            e=EventUtil.getEvent(e);
-            var target=EventUtil.getTarget(e);
-
-
-            /*
-             * --TODO
-             * 特殊处理-start
-             * 此处如果不作此处理，日历控件在点击控制按钮SPAN时会有问题
-             * 具体原因还未找出
-             */
-            if(target&&target.id){
-                target=document.getElementById(target.id);
-            }
-            /* -end- */
-
-            if(target==_this.obj||target==box||_this.isChildOf(box,target)){
-                return;
-            }
-            _this.close(box);
-            
-        };
-
-        EventUtil.addHandler(document,"click",function(e){
-            _this.closeHanlder2(e,dp_box);
-        });
+        _this.E2=function(e){_this.closeHanlder2(e);};
+        EventUtil.addHandler(document,"click", _this.E2);
 
     },
-    close:function(dp_box){
-        dp_box=dp_box||document.getElementById(this.IDS.dp_id);
-        EventUtil.removeHanlder(dp_box,"click",this.closeHanlder1);
-        EventUtil.removeHanlder(document,"click",this.closeHanlder2);
-        dp_box.parentNode.removeChild(dp_box);
+
+    // 移除日历控件，移除事件监听
+    close:function(){
+        var dp_box=document.getElementById(this.IDS.dp_id);
+        if(dp_box){
+
+            // 此处2个事件移除貌似没起作用
+             EventUtil.removeHanlder(dp_box,"click",this.E1);
+             EventUtil.removeHanlder(document,"click",this.E2);
+
+            document.body.removeChild(dp_box);
+        }
     },
+
+    //日历控件自身事件
+    closeHanlder1:function(e){
+        var box=document.getElementById(this.IDS.dp_id);
+
+        e=EventUtil.getEvent(e);
+        var target=EventUtil.getTarget(e);
+
+        if(!target||!target.nodeName){
+            return;
+        }
+
+        // 4 control buttons
+        if(target.nodeName=="SPAN"){
+            if(target.id==this.IDS.prev_year){
+              this.currentYear--; 
+            }
+            else if(target.id==this.IDS.prev_month){
+                if(this.currentMonth==0){
+                    this.currentMonth=11;
+                    this.currentYear--;
+                }else{
+                    this.currentMonth--;
+                }
+            }
+            else if(target.id==this.IDS.next_year){
+                this.currentYear++; 
+            }
+            else if(target.id==this.IDS.next_month){
+                if(this.currentMonth==11){
+                    this.currentMonth=0;
+                    this.currentYear++;
+                }else{
+                    this.currentMonth++;
+                }
+            }
+            this.loadPickerBox(this.currentYear,this.currentMonth);
+        }
+
+        // dates
+        else if(target.nodeName=="TD"){
+            // 判断日期是否可选
+            if(!this.hasClassName(target,this.ClassNames.td_disabled)){
+                //赋值并移除控件
+                this.obj.value=target.title;
+                this.currentDate=target.title;
+                this.close();
+            }
+
+        }
+
+    },
+
+    // document点击关闭事件
+    closeHanlder2:function(e){
+        var box=document.getElementById(this.IDS.dp_id);
+
+        e=EventUtil.getEvent(e);
+        var target=EventUtil.getTarget(e);
+
+
+        /*
+         * --TODO
+         * 特殊处理-start
+         * 此处如果不作此处理，日历控件在点击控制按钮SPAN时会有问题
+         * 具体原因还未找出
+         */
+        if(target&&target.id){
+            target=document.getElementById(target.id);
+        }
+        /* -end- */
+
+        if(target==this.obj||target==box||this.isChildOf(box,target)){
+            return;
+        }
+        this.close();
+        
+    },
+
     // 判断el是否为pEl的后备元素
     isChildOf:function(pEl,el){
         var prEl=el.parentNode;
@@ -383,6 +412,7 @@ datePicker.prototype={
         }
         return false;
     },
+
     // 判断是否存在样式名
     hasClassName:function(inElement, inClassName){
         var regExp = new RegExp('(?:^|\\s+)' + inClassName + '(?:\\s+|$)');
